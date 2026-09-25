@@ -76,7 +76,7 @@ export async function queryRows(runIds, { config, fetchImpl = fetch }) {
 }
 
 // Measured facts only, computed from the fetched RawTree rows.
-export function summarize(fetched, expectedIds, runIds) {
+export function summarize(fetched, expectedIds, runIds, policies = {}) {
   const byId = new Map();
   const FIELDS = ['event_id', 'run_id', 'policy', 'action_id', 'origin', 'event_type', 'tool', 'operation_key', 'effect_id', 'created_at', 'detail'];
   for (const raw of fetched) {
@@ -99,7 +99,7 @@ export function summarize(fetched, expectedIds, runIds) {
     const lastRunEvent = mine.filter((r) => r.event_type.startsWith('run.') && r.event_type !== 'run.approved').at(-1);
     return {
       runId,
-      policy: mine[0]?.policy || '',
+      policy: policies[runId] || mine[0]?.policy || '',
       events: mine.length,
       interruptions: mine.filter((r) => r.event_type === 'worker.exited' && /SIGKILL/.test(r.detail)).length,
       reconciled: mine.filter((r) => r.event_type === 'action.reconciled').length,
@@ -129,7 +129,8 @@ export async function runAudit({ runIds, store, provider, config, fetchImpl = fe
   } catch (err) {
     return { status: 'pending', reason: `Query not ready: ${err.message}`, expected: expectedIds.size };
   }
-  const summary = summarize(fetched.rows, expectedIds, runIds);
+  const policies = Object.fromEntries(runIds.map((id) => [id, store.getRun(id)?.policy || '']));
+  const summary = summarize(fetched.rows, expectedIds, runIds, policies);
   const complete = summary.missing === 0 && !fetched.truncated;
   return {
     status: complete ? 'live' : 'pending',

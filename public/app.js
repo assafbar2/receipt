@@ -95,7 +95,11 @@ $('fetchEvidence').addEventListener('click', async () => {
   if (!ok) { $('evidence').innerHTML = `<div class="errors">Evidence unavailable: ${esc(data.error)}</div>`; return; }
   state.evidenceId = data.evidenceId;
   state.evidence = data.evidence;
-  const e = data.evidence;
+  renderEvidence(data.evidence);
+});
+
+function renderEvidence(e) {
+  if (!e) { $('evidence').innerHTML = '<p class="muted">No web evidence for this run.</p>'; return; }
   const live = e.source === 'nimble';
   $('evidence').innerHTML = `
     <div class="meta">
@@ -105,7 +109,7 @@ $('fetchEvidence').addEventListener('click', async () => {
     <div class="small"><a href="${esc(e.url)}" target="_blank" rel="noreferrer" style="color:var(--blue)">${esc(e.url)}</a></div>
     ${e.note ? `<p class="hint small">${esc(e.note)}</p>` : ''}
     <pre>${esc(e.excerpt)}</pre>`;
-});
+}
 
 // ---------- step 2: plan ----------
 
@@ -134,6 +138,12 @@ $('generate').addEventListener('click', async () => {
     return;
   }
   state.draft = data;
+  renderPlan(data);
+  $('approve').disabled = false;
+  $('approveHint').textContent = 'Approval freezes this exact plan. Any change needs a new plan.';
+});
+
+function renderPlan(data) {
   const live = data.plannerMode === 'live';
   $('plan').innerHTML = `
     <div class="meta">
@@ -143,9 +153,7 @@ $('generate').addEventListener('click', async () => {
     </div>
     <p class="summary">${esc(data.plan.summary)}</p>
     ${data.plan.steps.length ? `<ol>${data.plan.steps.map((s, i) => `<li><span class="tool">${i + 1}. ${s.tool}</span><div>${stepBody(s)}</div></li>`).join('')}</ol>` : '<p class="muted">Zero steps: nothing to execute.</p>'}`;
-  $('approve').disabled = false;
-  $('approveHint').textContent = 'Approval freezes this exact plan. Any change needs a new plan.';
-});
+}
 
 // ---------- step 3: approve & run ----------
 
@@ -289,4 +297,26 @@ function renderAudit(r) {
     <details><summary>Query sent to RawTree</summary><pre>${esc(r.sql)}</pre></details>`;
 }
 
-boot();
+// Read-only deep link: /?run=<id> reopens a run; add &audit=1 to also show its audit.
+async function openFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const runId = params.get('run');
+  if (!runId) return;
+  const { ok, data } = await api('GET', `/api/runs/${encodeURIComponent(runId)}`);
+  if (!ok) return;
+  renderEvidence(data.evidence);
+  $('goal').value = data.goal;
+  renderPlan(data);
+  const first = data.lanes[0];
+  $('profile').value = first.profile;
+  renderReadiness();
+  $('approveHint').textContent = 'Plan frozen at approval.';
+  showRun(data);
+  if (data.lanes.some((l) => l.active)) startPolling(runId);
+  if (params.get('audit')) {
+    const r = await api('POST', `/api/runs/${runId}/audit`, {});
+    renderAudit(r.ok ? r.data : { status: 'unavailable', reason: r.data.error });
+  }
+}
+
+boot().then(openFromUrl);
