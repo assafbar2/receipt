@@ -2,6 +2,10 @@
 
 **The agent crashed. Did the action happen?**
 
+**[▶ Watch the 2-minute demo](https://youtu.be/ecFVJ0uVjvU)**
+
+[![RECEIPT demo video](https://img.youtube.com/vi/ecFVJ0uVjvU/hqdefault.jpg)](https://youtu.be/ecFVJ0uVjvU)
+
 RECEIPT is a crash-safe execution harness for customer-support agents. When a worker dies after a tool has acted but before the agent heard back, a fresh worker asks the provider for a receipt instead of guessing. If the tool can't prove what happened, RECEIPT stops and hands off to a human.
 
 ![Recovered run: RECEIPT issued one credit; retry-on-error issued two](docs/screenshots/05-recovered.png)
