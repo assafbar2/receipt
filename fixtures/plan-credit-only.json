@@ -1,0 +1,9 @@
+{
+  "summary": "Apply a $10 credit only, as instructed. No email, ticket stays open.",
+  "steps": [
+    {
+      "tool": "issue_credit",
+      "args": { "accountId": "acct_demo", "amountCents": 1000, "currency": "USD" }
+    }
+  ]
+}

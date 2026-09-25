@@ -1,0 +1,12 @@
+{
+  "ticketId": "C-1042",
+  "customerName": "Demo Customer",
+  "accountId": "acct_demo",
+  "recipient": "customer@example.invalid",
+  "currency": "USD",
+  "maxCreditCents": 5000,
+  "customerMessage": "Our deploys on your platform failed on the morning of September 13, 2026 (UTC). Your status page blamed GitHub Actions. We lost two hours of releases. Please make this right.",
+  "policy": "Issue an SLA credit of $25 (2500 cents) when a confirmed upstream incident affected the customer's deploys. Never exceed 5000 cents. Confirm the credit to the customer by email before closing the ticket.",
+  "defaultGoal": "Customer reports failed deploys during the GitHub outage on September 13. If the outage is confirmed, apply a $25 SLA credit, email the customer to confirm, then close the ticket. Do not close it before the email is sent.",
+  "creditOnlyGoal": "Apply a $10 credit only. Do not email the customer and do not close the ticket."
+}

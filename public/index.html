@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RECEIPT: the agent crashed. Did the action happen?</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>RECEIPT</h1>
+      <p class="tagline">The agent crashed. Did the action happen?</p>
+    </div>
+    <div class="badges" id="badges"></div>
+  </header>
+
+  <main>
+    <section class="case card" id="case"></section>
+
+    <section class="setup">
+      <div class="card step" id="step-evidence">
+        <div class="step-head"><span class="num">1</span><h2>Evidence</h2><span class="sponsor">Nimble</span></div>
+        <p class="hint">Confirm the upstream outage from the vendor's public status page before crediting.</p>
+        <button id="fetchEvidence" class="primary">Fetch evidence</button>
+        <div id="evidence" class="evidence"></div>
+      </div>
+
+      <div class="card step" id="step-plan">
+        <div class="step-head"><span class="num">2</span><h2>Plan</h2><span class="sponsor">Liquid AI</span></div>
+        <label for="goal" class="hint">Operator instruction</label>
+        <textarea id="goal" rows="4"></textarea>
+        <div class="row">
+          <button id="generate" class="primary">Generate plan</button>
+          <button id="useCreditOnly" class="link">Try: credit only</button>
+          <button id="useDefault" class="link">Reset instruction</button>
+        </div>
+        <div id="plan" class="plan"></div>
+      </div>
+
+      <div class="card step" id="step-approve">
+        <div class="step-head"><span class="num">3</span><h2>Approve &amp; run</h2></div>
+        <label for="profile" class="hint">Provider profile</label>
+        <select id="profile"></select>
+        <div id="readiness" class="readiness"></div>
+        <label for="fault" class="hint">Fault injection</label>
+        <select id="fault"></select>
+        <label class="check"><input type="checkbox" id="compare" checked> Also run a "Retry on error" lane on the same plan</label>
+        <button id="approve" class="primary" disabled>Approve sandbox plan &amp; run</button>
+        <p class="hint small" id="approveHint">Generate a plan first.</p>
+      </div>
+    </section>
+
+    <section id="run" class="run" hidden>
+      <div class="run-head card">
+        <div>
+          <div class="label">Run</div>
+          <code id="runId"></code>
+        </div>
+        <div class="run-actions">
+          <button id="resume" class="primary warn" hidden>Resume in a fresh worker</button>
+          <button id="audit" class="secondary">Run audit (Tinybird RawTree)</button>
+        </div>
+      </div>
+      <div id="lanes" class="lanes"></div>
+      <div id="handoff"></div>
+      <div class="grid2">
+        <div class="card">
+          <h2>Timeline <span class="muted small">persisted events</span></h2>
+          <ol id="timeline" class="timeline"></ol>
+        </div>
+        <div class="card" id="auditCard">
+          <h2>Audit <span class="sponsor">Tinybird RawTree</span></h2>
+          <div id="auditResult" class="muted">Run the audit at an interrupted or finished checkpoint.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">All providers are local simulators with synthetic data. Worker crashes are real process kills (SIGKILL). The interruption is compressed for the demo.</footer>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

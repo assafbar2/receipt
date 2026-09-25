@@ -1,0 +1,21 @@
+{
+  "summary": "GitHub's status page confirms the September 13 outage. Apply the $25 SLA credit, confirm by email, then close the case.",
+  "steps": [
+    {
+      "tool": "issue_credit",
+      "args": { "accountId": "acct_demo", "amountCents": 2500, "currency": "USD" }
+    },
+    {
+      "tool": "send_email",
+      "args": {
+        "recipient": "customer@example.invalid",
+        "subject": "Service credit for C-1042",
+        "body": "Hi, we confirmed the September 13 GitHub outage affected your deploys. A $25 service credit has been applied to your account. Sorry for the disruption."
+      }
+    },
+    {
+      "tool": "close_ticket",
+      "args": { "ticketId": "C-1042" }
+    }
+  ]
+}
